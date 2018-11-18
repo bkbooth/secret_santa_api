@@ -1,4 +1,4 @@
-# SecretSanta Elixir API
+# 🤫🎅 Secret Santa Elixir API
 
 To start your Phoenix server:
 
