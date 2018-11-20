@@ -5,13 +5,18 @@ defmodule SecretSantaWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", SecretSantaWeb do
+  scope "/api" do
     pipe_through :api
 
-    scope "/v1" do
-      resources "/users", UserController, except: [:new, :edit]
-      resources "/gift_groups", GiftGroupController, except: [:new, :edit]
-      resources "/gifters", GifterController, except: [:new, :edit]
+    if Mix.env() == :dev do
+      forward "/graphiql", Absinthe.Plug.GraphiQL,
+        schema: SecretSantaWeb.Schema,
+        json_codec: Phoenix.json_library(),
+        interface: :playground
     end
+
+    forward "/", Absinthe.Plug,
+      schema: SecretSantaWeb.Schema,
+      json_codec: Phoenix.json_library()
   end
 end
