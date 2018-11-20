@@ -5,8 +5,8 @@ defmodule SecretSanta.Gifts do
 
   import Ecto.Query, warn: false
   alias SecretSanta.Repo
-
   alias SecretSanta.Gifts.GiftGroup
+  alias SecretSanta.Gifts.Gifter
 
   @doc """
   Returns the list of gift_groups.
@@ -100,5 +100,99 @@ defmodule SecretSanta.Gifts do
   """
   def change_gift_group(%GiftGroup{} = gift_group) do
     GiftGroup.changeset(gift_group, %{})
+  end
+
+  @doc """
+  Returns the list of gifters.
+
+  ## Examples
+
+      iex> list_gifters()
+      [%Gifter{}, ...]
+
+  """
+  def list_gifters do
+    Repo.all(Gifter)
+  end
+
+  @doc """
+  Gets a single gifter.
+
+  Raises `Ecto.NoResultsError` if the Gifter does not exist.
+
+  ## Examples
+
+      iex> get_gifter!(123)
+      %Gifter{}
+
+      iex> get_gifter!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_gifter!(id), do: Repo.get!(Gifter, id)
+
+  @doc """
+  Creates a gifter.
+
+  ## Examples
+
+      iex> create_gifter(%{field: value})
+      {:ok, %Gifter{}}
+
+      iex> create_gifter(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_gifter(attrs \\ %{}) do
+    %Gifter{}
+    |> Gifter.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a gifter.
+
+  ## Examples
+
+      iex> update_gifter(gifter, %{field: new_value})
+      {:ok, %Gifter{}}
+
+      iex> update_gifter(gifter, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_gifter(%Gifter{} = gifter, attrs) do
+    gifter
+    |> Gifter.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Gifter.
+
+  ## Examples
+
+      iex> delete_gifter(gifter)
+      {:ok, %Gifter{}}
+
+      iex> delete_gifter(gifter)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_gifter(%Gifter{} = gifter) do
+    Repo.delete(gifter)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking gifter changes.
+
+  ## Examples
+
+      iex> change_gifter(gifter)
+      %Ecto.Changeset{source: %Gifter{}}
+
+  """
+  def change_gifter(%Gifter{} = gifter) do
+    Gifter.changeset(gifter, %{})
   end
 end
