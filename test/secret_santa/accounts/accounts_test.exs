@@ -7,16 +7,16 @@ defmodule SecretSanta.AccountsTest do
     alias SecretSanta.Accounts.User
 
     @valid_attrs %{
-      email: "some email",
-      name: "some name",
-      password_hash: "some password_hash",
-      phone_number: "some phone_number"
+      email: "foo@example.com",
+      name: "foo bar",
+      password_hash: "password123",
+      phone_number: "0123456789"
     }
     @update_attrs %{
-      email: "some updated email",
-      name: "some updated name",
-      password_hash: "some updated password_hash",
-      phone_number: "some updated phone_number"
+      email: "bar@example.com",
+      name: "bar baz",
+      password_hash: "password456",
+      phone_number: "0987654321"
     }
     @invalid_attrs %{email: nil, name: nil, password_hash: nil, phone_number: nil}
 
@@ -41,10 +41,10 @@ defmodule SecretSanta.AccountsTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "some email"
-      assert user.name == "some name"
-      assert user.password_hash == "some password_hash"
-      assert user.phone_number == "some phone_number"
+      assert user.email == "foo@example.com"
+      assert user.name == "foo bar"
+      assert user.password_hash == "password123"
+      assert user.phone_number == "0123456789"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -54,10 +54,10 @@ defmodule SecretSanta.AccountsTest do
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
-      assert user.email == "some updated email"
-      assert user.name == "some updated name"
-      assert user.password_hash == "some updated password_hash"
-      assert user.phone_number == "some updated phone_number"
+      assert user.email == "bar@example.com"
+      assert user.name == "bar baz"
+      assert user.password_hash == "password456"
+      assert user.phone_number == "0987654321"
     end
 
     test "update_user/2 with invalid data returns error changeset" do

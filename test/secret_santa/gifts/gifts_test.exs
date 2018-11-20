@@ -7,23 +7,36 @@ defmodule SecretSanta.GiftsTest do
     alias SecretSanta.Gifts.GiftGroup
 
     @valid_attrs %{
-      code: "some code",
-      description: "some description",
-      name: "some name",
-      rules: []
+      code: "c0d3",
+      description: "a description of my gift group",
+      name: "my gift group",
+      rules: ["anything goes"]
     }
     @update_attrs %{
-      code: "some updated code",
-      description: "some updated description",
-      name: "some updated name",
-      rules: []
+      code: "c0d3z",
+      description: "a description of our gift group",
+      name: "our gift group",
+      rules: ["almost anything goes"]
     }
-
     @invalid_attrs %{code: nil, description: nil, name: nil, rules: nil}
 
+    @valid_user %{
+      email: "foo@example.com",
+      name: "foo bar",
+      password_hash: "password123"
+    }
+
+    def owner_fixture do
+      {:ok, user} = SecretSanta.Accounts.create_user(@valid_user)
+      user
+    end
+
     def gift_group_fixture(attrs \\ %{}) do
+      owner = owner_fixture()
+
       {:ok, gift_group} =
-        attrs
+        %{owner_id: owner.id}
+        |> Enum.into(attrs)
         |> Enum.into(@valid_attrs)
         |> Gifts.create_gift_group()
 
@@ -41,11 +54,14 @@ defmodule SecretSanta.GiftsTest do
     end
 
     test "create_gift_group/1 with valid data creates a gift_group" do
-      assert {:ok, %GiftGroup{} = gift_group} = Gifts.create_gift_group(@valid_attrs)
-      assert gift_group.code == "some code"
-      assert gift_group.description == "some description"
-      assert gift_group.name == "some name"
-      assert gift_group.rules == []
+      owner = owner_fixture()
+      attrs = Enum.into(%{owner_id: owner.id}, @valid_attrs)
+      assert {:ok, %GiftGroup{} = gift_group} = Gifts.create_gift_group(attrs)
+      assert gift_group.code == "c0d3"
+      assert gift_group.description == "a description of my gift group"
+      assert gift_group.name == "my gift group"
+      assert gift_group.rules == ["anything goes"]
+      assert gift_group.owner_id == owner.id
     end
 
     test "create_gift_group/1 with invalid data returns error changeset" do
@@ -55,10 +71,10 @@ defmodule SecretSanta.GiftsTest do
     test "update_gift_group/2 with valid data updates the gift_group" do
       gift_group = gift_group_fixture()
       assert {:ok, %GiftGroup{} = gift_group} = Gifts.update_gift_group(gift_group, @update_attrs)
-      assert gift_group.code == "some updated code"
-      assert gift_group.description == "some updated description"
-      assert gift_group.name == "some updated name"
-      assert gift_group.rules == []
+      assert gift_group.code == "c0d3z"
+      assert gift_group.description == "a description of our gift group"
+      assert gift_group.name == "our gift group"
+      assert gift_group.rules == ["almost anything goes"]
     end
 
     test "update_gift_group/2 with invalid data returns error changeset" do

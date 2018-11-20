@@ -10,7 +10,7 @@ defmodule SecretSanta.Gifts.GiftGroup do
     field :name, :string
     field :rules, {:array, :string}
 
-    belongs_to :user,
+    belongs_to :owner,
                SecretSanta.Accounts.User,
                foreign_key: :owner_id
 
@@ -20,8 +20,9 @@ defmodule SecretSanta.Gifts.GiftGroup do
   @doc false
   def changeset(gift_group, attrs) do
     gift_group
-    |> cast(attrs, [:code, :name, :description, :rules])
-    |> validate_required([:code, :name])
+    |> cast(attrs, [:code, :name, :description, :rules, :owner_id])
+    |> validate_required([:code, :name, :owner_id])
     |> unique_constraint(:code)
+    |> cast_assoc(:owner)
   end
 end

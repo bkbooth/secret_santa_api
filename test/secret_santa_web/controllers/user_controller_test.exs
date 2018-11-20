@@ -5,16 +5,16 @@ defmodule SecretSantaWeb.UserControllerTest do
   alias SecretSanta.Accounts.User
 
   @create_attrs %{
-    email: "some email",
-    name: "some name",
-    password_hash: "some password_hash",
-    phone_number: "some phone_number"
+    email: "foo@example.com",
+    name: "foo bar",
+    password_hash: "password123",
+    phone_number: "0123456789"
   }
   @update_attrs %{
-    email: "some updated email",
-    name: "some updated name",
-    password_hash: "some updated password_hash",
-    phone_number: "some updated phone_number"
+    email: "bar@example.com",
+    name: "bar baz",
+    password_hash: "password456",
+    phone_number: "0987654321"
   }
   @invalid_attrs %{email: nil, name: nil, password_hash: nil, phone_number: nil}
 
@@ -43,10 +43,10 @@ defmodule SecretSantaWeb.UserControllerTest do
 
       assert %{
                "id" => id,
-               "email" => "some email",
-               "name" => "some name",
-               "password_hash" => "some password_hash",
-               "phone_number" => "some phone_number"
+               "email" => "foo@example.com",
+               "name" => "foo bar",
+               "password_hash" => "password123",
+               "phone_number" => "0123456789"
              } = json_response(conn, 200)["data"]
     end
 
@@ -67,10 +67,10 @@ defmodule SecretSantaWeb.UserControllerTest do
 
       assert %{
                "id" => id,
-               "email" => "some updated email",
-               "name" => "some updated name",
-               "password_hash" => "some updated password_hash",
-               "phone_number" => "some updated phone_number"
+               "email" => "bar@example.com",
+               "name" => "bar baz",
+               "password_hash" => "password456",
+               "phone_number" => "0987654321"
              } = json_response(conn, 200)["data"]
     end
 

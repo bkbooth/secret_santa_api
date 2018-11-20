@@ -5,21 +5,38 @@ defmodule SecretSantaWeb.GiftGroupControllerTest do
   alias SecretSanta.Gifts.GiftGroup
 
   @create_attrs %{
-    code: "some code",
-    description: "some description",
-    name: "some name",
-    rules: []
+    code: "c0d3",
+    description: "a description of my gift group",
+    name: "my gift group",
+    rules: ["anything goes"]
   }
   @update_attrs %{
-    code: "some updated code",
-    description: "some updated description",
-    name: "some updated name",
-    rules: []
+    code: "c0d3z",
+    description: "a description of our gift group",
+    name: "our gift group",
+    rules: ["almost anything goes"]
   }
   @invalid_attrs %{code: nil, description: nil, name: nil, rules: nil}
 
+  @valid_user %{
+    email: "foo@example.com",
+    name: "foo bar",
+    password_hash: "password123"
+  }
+
+  def owner_fixture do
+    {:ok, user} = SecretSanta.Accounts.create_user(@valid_user)
+    user
+  end
+
   def fixture(:gift_group) do
-    {:ok, gift_group} = Gifts.create_gift_group(@create_attrs)
+    owner = owner_fixture()
+
+    {:ok, gift_group} =
+      %{owner_id: owner.id}
+      |> Enum.into(@create_attrs)
+      |> Gifts.create_gift_group()
+
     gift_group
   end
 
@@ -36,17 +53,19 @@ defmodule SecretSantaWeb.GiftGroupControllerTest do
 
   describe "create gift_group" do
     test "renders gift_group when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.gift_group_path(conn, :create), gift_group: @create_attrs)
+      owner = owner_fixture()
+      attrs = Enum.into(%{owner_id: owner.id}, @create_attrs)
+      conn = post(conn, Routes.gift_group_path(conn, :create), gift_group: attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.gift_group_path(conn, :show, id))
 
       assert %{
                "id" => id,
-               "code" => "some code",
-               "description" => "some description",
-               "name" => "some name",
-               "rules" => []
+               "code" => "c0d3",
+               "description" => "a description of my gift group",
+               "name" => "my gift group",
+               "rules" => ["anything goes"]
              } = json_response(conn, 200)["data"]
     end
 
@@ -72,10 +91,10 @@ defmodule SecretSantaWeb.GiftGroupControllerTest do
 
       assert %{
                "id" => id,
-               "code" => "some updated code",
-               "description" => "some updated description",
-               "name" => "some updated name",
-               "rules" => []
+               "code" => "c0d3z",
+               "description" => "a description of our gift group",
+               "name" => "our gift group",
+               "rules" => ["almost anything goes"]
              } = json_response(conn, 200)["data"]
     end
 
