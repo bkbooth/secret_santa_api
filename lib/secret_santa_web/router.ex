@@ -10,6 +10,7 @@ defmodule SecretSantaWeb.Router do
 
     scope "/v1" do
       resources "/users", UserController, except: [:new, :edit]
+      resources "/gift_groups", GiftGroupController, except: [:new, :edit]
     end
   end
 end
