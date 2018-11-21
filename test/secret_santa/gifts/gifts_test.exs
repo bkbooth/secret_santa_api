@@ -95,6 +95,16 @@ defmodule SecretSanta.GiftsTest do
     test "create_gifter/1 with invalid data returns error changeset", %{gift_group: gift_group} do
       assert {:error, %Ecto.Changeset{}} = Gifts.create_gifter(gift_group, invalid_gifter())
     end
+
+    test "create_gifter/1 requires either email or phone_number", %{gift_group: gift_group} do
+      attrs = %{email: nil, phone_number: nil} |> Enum.into(valid_gifter())
+      {:error, %Ecto.Changeset{} = changeset} = Gifts.create_gifter(gift_group, attrs)
+
+      assert changeset.errors == [
+               phone_number: {"either email or phone_number is required", []},
+               email: {"either email or phone_number is required", []}
+             ]
+    end
   end
 
   describe "with existing gifters" do
