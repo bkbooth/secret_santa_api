@@ -5,10 +5,11 @@ defmodule SecretSanta.Accounts.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :email, :string
     field :name, :string
-    field :password_hash, :string
+    field :email, :string
     field :phone_number, :string
+    field :password, :string, virtual: true
+    field :password_hash, :string
 
     timestamps()
   end
@@ -16,10 +17,33 @@ defmodule SecretSanta.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :email, :password_hash, :phone_number])
-    |> validate_required([:name, :email, :password_hash])
+    |> cast(attrs, [:name, :email, :phone_number])
+    |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> unique_constraint(:phone_number)
   end
+
+  @doc false
+  def password_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:password])
+    |> validate_required([:password])
+    |> validate_length(:password, min: 8)
+    |> put_password_hash()
+  end
+
+  @doc false
+  def create_changeset(user, attrs) do
+    user
+    |> changeset(attrs)
+    |> password_changeset(attrs)
+  end
+
+  defp put_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: pwd}} = changeset) do
+    # TODO: Use Bcrypt to hash the password
+    change(changeset, password_hash: "HASHED###" <> pwd <> "###", password: nil)
+  end
+
+  defp put_password_hash(changeset), do: changeset
 end

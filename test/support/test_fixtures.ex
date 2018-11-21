@@ -5,20 +5,20 @@ defmodule SecretSanta.TestFixtures do
     %{
       name: "Test User",
       email: "#{unique_username()}@example.com",
-      password_hash: "password123",
-      phone_number: "#{System.unique_integer([:positive])}"
+      phone_number: "#{System.unique_integer([:positive])}",
+      password: "password123"
     }
   end
 
   def invalid_user do
-    %{name: nil, email: nil, password_hash: nil}
+    %{name: nil, email: nil, password: nil}
   end
 
   def user_fixture(attrs \\ %{}) do
     attrs = Enum.into(valid_user(), attrs)
 
     with {:ok, user} <- Accounts.create_user(attrs) do
-      user
+      user |> IO.inspect()
     end
   end
 

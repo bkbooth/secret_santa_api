@@ -6,10 +6,11 @@ defmodule SecretSanta.AccountsTest do
 
   test "create_user/1 with valid data creates a user" do
     assert {:ok, %User{} = user} = Accounts.create_user(valid_user())
-    assert user.email =~ ~r/^user\d+@example\.com$/
     assert user.name == "Test User"
-    assert user.password_hash == "password123"
+    assert user.email =~ ~r/^user\d+@example\.com$/
     assert user.phone_number =~ ~r/^\d+$/
+    assert user.password_hash != "password123"
+    refute user.password
   end
 
   test "create_user/1 with invalid data returns error changeset" do
