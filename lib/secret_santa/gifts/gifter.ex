@@ -19,11 +19,13 @@ defmodule SecretSanta.Gifts.Gifter do
   @doc false
   def changeset(gifter, attrs) do
     gifter
-    |> cast(attrs, [:name, :email, :phone_number])
+    |> cast(attrs, [:name, :email, :phone_number, :giftee_id, :user_id])
     |> validate_required([:name])
     |> validate_any_required([:email, :phone_number])
     |> validate_format(:email, ~r/@/)
+    |> foreign_key_constraint(:giftee_id)
     |> cast_assoc(:giftee)
+    |> foreign_key_constraint(:user_id)
     |> cast_assoc(:user)
   end
 
