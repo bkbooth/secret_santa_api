@@ -19,23 +19,33 @@ defmodule SecretSanta.Gifts.Gifter do
   @doc false
   def changeset(gifter, attrs) do
     gifter
-    |> cast(attrs, [:name, :email, :phone_number, :gift_group_id, :giftee_id, :user_id])
-    |> validate_required([:name, :gift_group_id])
-    |> validate_email_or_phone_number()
+    |> cast(attrs, [:name, :email, :phone_number])
+    |> validate_required([:name])
+    |> validate_any_required([:email, :phone_number])
+    |> validate_format(:email, ~r/@/)
+    |> cast_assoc(:giftee)
+    |> cast_assoc(:user)
   end
 
-  def validate_email_or_phone_number(changeset) do
-    if present?(changeset, :email) || present?(changeset, :phone_number) do
+  @doc false
+  def create_changeset(gifter, attrs) do
+    gifter
+    |> changeset(attrs)
+    |> cast_assoc(:gift_group)
+  end
+
+  def validate_any_required(changeset, fields) do
+    if Enum.any?(fields, &present?(changeset, &1)) do
       changeset
     else
-      changeset
-      |> add_error(:email, "either email or phone number is required")
-      |> add_error(:phone_number, "either email or phone number is required")
+      Enum.reduce(fields, changeset, fn field, changeset ->
+        add_error(changeset, field, "either #{Enum.join(fields, " or ")} is required")
+      end)
     end
   end
 
   defp present?(changeset, field) do
     value = get_field(changeset, field)
-    value && value != ""
+    value && String.trim(value) != ""
   end
 end

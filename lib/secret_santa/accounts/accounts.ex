@@ -4,6 +4,7 @@ defmodule SecretSanta.Accounts do
   """
 
   import Ecto.Query, warn: false
+
   alias SecretSanta.Repo
   alias SecretSanta.Accounts.User
 

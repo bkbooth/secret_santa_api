@@ -22,6 +22,7 @@ defmodule SecretSanta.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import SecretSanta.DataCase
+      import SecretSanta.TestFixtures
     end
   end
 

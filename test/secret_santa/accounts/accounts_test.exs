@@ -2,78 +2,51 @@ defmodule SecretSanta.AccountsTest do
   use SecretSanta.DataCase
 
   alias SecretSanta.Accounts
+  alias SecretSanta.Accounts.User
 
-  describe "users" do
-    alias SecretSanta.Accounts.User
+  test "create_user/1 with valid data creates a user" do
+    assert {:ok, %User{} = user} = Accounts.create_user(valid_user())
+    assert user.email =~ ~r/^user\d+@example\.com$/
+    assert user.name == "Test User"
+    assert user.password_hash == "password123"
+    assert user.phone_number =~ ~r/^\d+$/
+  end
 
-    @valid_attrs %{
-      email: "foo@example.com",
-      name: "foo bar",
-      password_hash: "password123",
-      phone_number: "0123456789"
-    }
-    @update_attrs %{
-      email: "bar@example.com",
-      name: "bar baz",
-      password_hash: "password456",
-      phone_number: "0987654321"
-    }
-    @invalid_attrs %{email: nil, name: nil, password_hash: nil, phone_number: nil}
+  test "create_user/1 with invalid data returns error changeset" do
+    assert {:error, %Ecto.Changeset{}} = Accounts.create_user(invalid_user())
+  end
 
-    def user_fixture(attrs \\ %{}) do
-      {:ok, user} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_user()
-
-      user
+  describe "with existing user" do
+    setup _ do
+      {:ok, user: user_fixture()}
     end
 
-    test "list_users/0 returns all users" do
-      user = user_fixture()
+    test "list_users/0 returns all users", %{user: user} do
       assert Accounts.list_users() == [user]
     end
 
-    test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
+    test "get_user!/1 returns the user with given id", %{user: user} do
       assert Accounts.get_user!(user.id) == user
     end
 
-    test "create_user/1 with valid data creates a user" do
-      assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "foo@example.com"
-      assert user.name == "foo bar"
-      assert user.password_hash == "password123"
-      assert user.phone_number == "0123456789"
+    test "update_user/2 with valid data updates the user", %{user: %User{id: id} = user} do
+      attrs = %{name: "Updated Name"}
+      assert {:ok, %User{} = user} = Accounts.update_user(user, attrs)
+      assert user.id == id
+      assert user.name == "Updated Name"
     end
 
-    test "create_user/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
-    end
-
-    test "update_user/2 with valid data updates the user" do
-      user = user_fixture()
-      assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
-      assert user.email == "bar@example.com"
-      assert user.name == "bar baz"
-      assert user.password_hash == "password456"
-      assert user.phone_number == "0987654321"
-    end
-
-    test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
-      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
+    test "update_user/2 with invalid data returns error changeset", %{user: user} do
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, invalid_user())
       assert user == Accounts.get_user!(user.id)
     end
 
-    test "delete_user/1 deletes the user" do
-      user = user_fixture()
+    test "delete_user/1 deletes the user", %{user: user} do
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
     end
 
-    test "change_user/1 returns a user changeset" do
-      user = user_fixture()
+    test "change_user/1 returns a user changeset", %{user: user} do
       assert %Ecto.Changeset{} = Accounts.change_user(user)
     end
   end

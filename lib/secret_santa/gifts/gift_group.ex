@@ -10,9 +10,7 @@ defmodule SecretSanta.Gifts.GiftGroup do
     field :name, :string
     field :rules, {:array, :string}
 
-    belongs_to :owner,
-               SecretSanta.Accounts.User,
-               foreign_key: :owner_id
+    belongs_to :owner, SecretSanta.Accounts.User
 
     timestamps()
   end
@@ -20,9 +18,26 @@ defmodule SecretSanta.Gifts.GiftGroup do
   @doc false
   def changeset(gift_group, attrs) do
     gift_group
-    |> cast(attrs, [:code, :name, :description, :rules, :owner_id])
-    |> validate_required([:code, :name, :owner_id])
-    |> unique_constraint(:code)
-    |> cast_assoc(:owner)
+    |> cast(attrs, [:name, :description, :rules])
+    |> validate_required([:name])
   end
+
+  @doc false
+  def create_changeset(gift_group, attrs) do
+    gift_group
+    |> changeset(attrs)
+    |> cast_assoc(:owner)
+    |> put_code()
+  end
+
+  defp put_code(%Ecto.Changeset{valid?: true} = changeset) do
+    code =
+      Ecto.UUID.generate()
+      |> String.split("-")
+      |> hd
+
+    change(changeset, code: code)
+  end
+
+  defp put_code(changeset), do: changeset
 end

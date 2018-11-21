@@ -18,6 +18,7 @@ defmodule SecretSanta.Accounts.User do
     user
     |> cast(attrs, [:name, :email, :password_hash, :phone_number])
     |> validate_required([:name, :email, :password_hash])
+    |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> unique_constraint(:phone_number)
   end

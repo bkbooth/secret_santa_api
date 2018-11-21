@@ -4,21 +4,25 @@ defmodule SecretSanta.Gifts do
   """
 
   import Ecto.Query, warn: false
+
   alias SecretSanta.Repo
+  alias SecretSanta.Accounts.User
   alias SecretSanta.Gifts.GiftGroup
   alias SecretSanta.Gifts.Gifter
 
   @doc """
-  Returns the list of gift_groups.
+  Returns the list of gift_groups for a given user.
 
   ## Examples
 
-      iex> list_gift_groups()
+      iex> list_user_gift_groups(user)
       [%GiftGroup{}, ...]
 
   """
-  def list_gift_groups do
-    Repo.all(GiftGroup)
+  def list_user_gift_groups(%User{} = user) do
+    GiftGroup
+    |> user_gift_groups_query(user)
+    |> Repo.all()
   end
 
   @doc """
@@ -38,20 +42,44 @@ defmodule SecretSanta.Gifts do
   def get_gift_group!(id), do: Repo.get!(GiftGroup, id)
 
   @doc """
+  Gets a single gift_group for a given user.
+
+  Raises `Ecto.NoResultsError` if the Gift group does not exist or if the user isn't the owner.
+
+  ## Examples
+
+      iex> get_user_gift_group!(owner, 123)
+      %GiftGroup{}
+
+      iex> get_user_gift_group!(owner, 456)
+      ** (Ecto.NoResultsError)
+
+      iex> get_user_gift_group!(non_owner, 123)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_gift_group!(%User{} = user, id) do
+    from(p in GiftGroup, where: p.id == ^id)
+    |> user_gift_groups_query(user)
+    |> Repo.one!()
+  end
+
+  @doc """
   Creates a gift_group.
 
   ## Examples
 
-      iex> create_gift_group(%{field: value})
+      iex> create_gift_group(user, %{field: value})
       {:ok, %GiftGroup{}}
 
-      iex> create_gift_group(%{field: bad_value})
+      iex> create_gift_group(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_gift_group(attrs \\ %{}) do
+  def create_gift_group(%User{} = user, attrs \\ %{}) do
     %GiftGroup{}
-    |> GiftGroup.changeset(attrs)
+    |> GiftGroup.create_changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:owner, user)
     |> Repo.insert()
   end
 
@@ -102,17 +130,23 @@ defmodule SecretSanta.Gifts do
     GiftGroup.changeset(gift_group, %{})
   end
 
+  defp user_gift_groups_query(query, %User{id: user_id}) do
+    from(p in query, where: p.owner_id == ^user_id)
+  end
+
   @doc """
-  Returns the list of gifters.
+  Returns the list of gifters for a given gift_group.
 
   ## Examples
 
-      iex> list_gifters()
+      iex> list_gift_group_gifters(gift_group)
       [%Gifter{}, ...]
 
   """
-  def list_gifters do
-    Repo.all(Gifter)
+  def list_gift_group_gifters(%GiftGroup{} = gift_group) do
+    Gifter
+    |> gift_group_gifters_query(gift_group)
+    |> Repo.all()
   end
 
   @doc """
@@ -136,16 +170,17 @@ defmodule SecretSanta.Gifts do
 
   ## Examples
 
-      iex> create_gifter(%{field: value})
+      iex> create_gifter(gift_group, %{field: value})
       {:ok, %Gifter{}}
 
-      iex> create_gifter(%{field: bad_value})
+      iex> create_gifter(gift_group, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_gifter(attrs \\ %{}) do
+  def create_gifter(%GiftGroup{} = gift_group, attrs \\ %{}) do
     %Gifter{}
-    |> Gifter.changeset(attrs)
+    |> Gifter.create_changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:gift_group, gift_group)
     |> Repo.insert()
   end
 
@@ -194,5 +229,9 @@ defmodule SecretSanta.Gifts do
   """
   def change_gifter(%Gifter{} = gifter) do
     Gifter.changeset(gifter, %{})
+  end
+
+  defp gift_group_gifters_query(query, %GiftGroup{id: gift_group_id}) do
+    from(p in query, where: p.gift_group_id == ^gift_group_id)
   end
 end

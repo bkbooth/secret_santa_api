@@ -21,6 +21,8 @@ defmodule SecretSantaWeb.ConnCase do
       use Phoenix.ConnTest
       alias SecretSantaWeb.Router.Helpers, as: Routes
 
+      import SecretSanta.TestFixtures
+
       # The default endpoint for testing
       @endpoint SecretSantaWeb.Endpoint
     end
