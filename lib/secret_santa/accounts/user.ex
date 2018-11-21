@@ -2,6 +2,8 @@ defmodule SecretSanta.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Comeonin.Bcrypt
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
@@ -41,8 +43,7 @@ defmodule SecretSanta.Accounts.User do
   end
 
   defp put_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: pwd}} = changeset) do
-    # TODO: Use Bcrypt to hash the password
-    change(changeset, password_hash: "HASHED###" <> pwd <> "###", password: nil)
+    change(changeset, Bcrypt.add_hash(pwd))
   end
 
   defp put_password_hash(changeset), do: changeset

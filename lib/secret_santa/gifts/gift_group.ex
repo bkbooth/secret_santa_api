@@ -36,7 +36,7 @@ defmodule SecretSanta.Gifts.GiftGroup do
       |> String.split("-")
       |> hd
 
-    change(changeset, code: code)
+    put_change(changeset, :code, code)
   end
 
   defp put_code(changeset), do: changeset

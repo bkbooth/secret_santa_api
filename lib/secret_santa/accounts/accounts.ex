@@ -5,8 +5,9 @@ defmodule SecretSanta.Accounts do
 
   import Ecto.Query, warn: false
 
+  alias Comeonin.Bcrypt
   alias SecretSanta.Repo
-  alias SecretSanta.Accounts.User
+  alias SecretSanta.Accounts.{Guardian, User}
 
   @doc """
   Returns the list of users.
@@ -36,6 +37,23 @@ defmodule SecretSanta.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  @doc """
+  Gets a single user by email address.
+
+  ## Examples
+
+      iex> get_user_by_email("user@example.com")
+      %User{}
+
+      iex> get_user_by_email("unknown@example.com")
+      nil
+
+  """
+  def get_user_by_email(email) do
+    from(u in User, where: u.email == ^email)
+    |> Repo.one()
+  end
 
   @doc """
   Creates a user.
@@ -100,5 +118,40 @@ defmodule SecretSanta.Accounts do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  @doc """
+  Authenticate a user by email and password.
+
+      iex> authenticate_by_email_and_password("user@example.com", "password123")
+      {:ok, token, claims}
+
+      iex> authenticate_by_email_and_password("user@example.com", "invalid123")
+      {:error, :unauthorized}
+
+      iex> authenticate_by_email_and_password("unknown@example.com", "password123")
+      {:error, :not_found}
+
+  """
+  def authenticate_by_email_and_password(email, password) do
+    with %User{} = user <- get_user_by_email(email),
+         :ok <- verify_password(password, user.password_hash) do
+      Guardian.encode_and_sign(user)
+    else
+      nil ->
+        Bcrypt.dummy_checkpw()
+        {:error, :not_found}
+
+      _ ->
+        {:error, :unauthorized}
+    end
+  end
+
+  defp verify_password(password, password_hash) do
+    if Bcrypt.checkpw(password, password_hash) do
+      :ok
+    else
+      {:error, :invalid_password}
+    end
   end
 end

@@ -18,6 +18,11 @@ config :secret_santa, SecretSantaWeb.Endpoint,
   render_errors: [view: SecretSantaWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: SecretSanta.PubSub, adapter: Phoenix.PubSub.PG2]
 
+# Configures Guardian
+config :secret_santa, SecretSanta.Accounts.Guardian,
+  issuer: "secret_santa",
+  secret_key: "1oandh2eNzgkTGE7trKmggaoy7rENfPvvt1y9WBpOUE9RYGBjW2jHvm4lhl3aAaH"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

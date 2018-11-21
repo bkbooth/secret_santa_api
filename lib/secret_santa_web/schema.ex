@@ -1,5 +1,6 @@
 defmodule SecretSantaWeb.Schema do
   use Absinthe.Schema
+
   import_types(SecretSantaWeb.Schema.AccountTypes)
   import_types(SecretSantaWeb.Schema.GiftTypes)
 
