@@ -7,6 +7,7 @@ defmodule SecretSantaWeb.Schema.GiftTypes do
     field :name, non_null(:string)
     field :description, :string
     field :rules, list_of(:string)
+    field :drawn, non_null(:boolean)
     field :owner, non_null(:user)
   end
 

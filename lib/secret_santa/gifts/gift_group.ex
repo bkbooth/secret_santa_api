@@ -9,6 +9,7 @@ defmodule SecretSanta.Gifts.GiftGroup do
     field :description, :string
     field :name, :string
     field :rules, {:array, :string}
+    field :drawn, :boolean, default: false
 
     belongs_to :owner, SecretSanta.Accounts.User
 
