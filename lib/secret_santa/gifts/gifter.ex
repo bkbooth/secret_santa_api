@@ -13,20 +13,23 @@ defmodule SecretSanta.Gifts.Gifter do
     belongs_to :giftee, SecretSanta.Gifts.Gifter
     belongs_to :user, SecretSanta.Accounts.User
 
+    many_to_many :exclusions, SecretSanta.Gifts.Gifter,
+      join_through: "gifters_exclusions",
+      join_keys: [gifter_id: :id, giftee_id: :id],
+      unique: true
+
     timestamps()
   end
 
   @doc false
   def changeset(gifter, attrs) do
     gifter
-    |> cast(attrs, [:name, :email, :phone_number, :giftee_id, :user_id])
+    |> cast(attrs, [:name, :email, :phone_number, :giftee_id])
     |> validate_required([:name])
     |> validate_any_required([:email, :phone_number])
     |> validate_format(:email, ~r/@/)
     |> foreign_key_constraint(:giftee_id)
     |> cast_assoc(:giftee)
-    |> foreign_key_constraint(:user_id)
-    |> cast_assoc(:user)
   end
 
   @doc false

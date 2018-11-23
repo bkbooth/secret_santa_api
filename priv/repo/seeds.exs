@@ -36,22 +36,24 @@ alias SecretSanta.{Accounts, Gifts}
     user_id: mario.id
   })
 
-{:ok, _} =
+{:ok, gifter_luigi} =
   Gifts.create_gifter(mario_gift_group, %{
     name: "Luigi",
     email: "luigi@example.com"
   })
 
-{:ok, _} =
+{:ok, gifter_peach} =
   Gifts.create_gifter(mario_gift_group, %{
     name: "Peach",
-    email: "peach@example.com"
+    email: "peach@example.com",
+    exclusions: [gifter_luigi.id]
   })
 
 {:ok, _} =
   Gifts.create_gifter(mario_gift_group, %{
     name: "Bowser",
-    email: "bowser@example.com"
+    email: "bowser@example.com",
+    exclusions: [gifter_peach.id]
   })
 
 # Luigi's gift group
@@ -78,7 +80,7 @@ alias SecretSanta.{Accounts, Gifts}
     user_id: luigi.id
   })
 
-{:ok, _} =
+{:ok, gifter_mario} =
   Gifts.create_gifter(luigi_gift_group, %{
     name: "Mario",
     email: "mario@example.com"
@@ -93,5 +95,6 @@ alias SecretSanta.{Accounts, Gifts}
 {:ok, _} =
   Gifts.create_gifter(luigi_gift_group, %{
     name: "Toad",
-    email: "toad@example.com"
+    email: "toad@example.com",
+    exclusions: [gifter_mario.id]
   })

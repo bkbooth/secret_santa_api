@@ -181,6 +181,7 @@ defmodule SecretSanta.Gifts do
     %Gifter{}
     |> Gifter.create_changeset(attrs)
     |> Ecto.Changeset.put_assoc(:gift_group, gift_group)
+    |> put_gifter_exclusions(attrs)
     |> Repo.insert()
   end
 
@@ -199,6 +200,7 @@ defmodule SecretSanta.Gifts do
   def update_gifter(%Gifter{} = gifter, attrs) do
     gifter
     |> Gifter.changeset(attrs)
+    |> put_gifter_exclusions(attrs)
     |> Repo.update()
   end
 
@@ -233,5 +235,16 @@ defmodule SecretSanta.Gifts do
 
   defp gift_group_gifters_query(query, %GiftGroup{id: gift_group_id}) do
     from(p in query, where: p.gift_group_id == ^gift_group_id)
+  end
+
+  defp put_gifter_exclusions(changeset, attrs) do
+    case Map.get(attrs, :exclusions, []) do
+      [] ->
+        changeset
+
+      exclusion_ids ->
+        gifters = Repo.all(from g in Gifter, where: g.id in ^exclusion_ids)
+        Ecto.Changeset.put_assoc(changeset, :exclusions, gifters)
+    end
   end
 end

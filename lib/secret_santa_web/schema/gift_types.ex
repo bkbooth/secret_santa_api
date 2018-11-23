@@ -16,6 +16,7 @@ defmodule SecretSantaWeb.Schema.GiftTypes do
     field :name, non_null(:string)
     field :email, :string
     field :phone_number, :string
+    field :exclusions, list_of(:gifter)
     field :gift_group, non_null(:gift_group)
     field :giftee, :gifter
     field :user, :user
