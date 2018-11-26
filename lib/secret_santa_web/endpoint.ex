@@ -36,5 +36,7 @@ defmodule SecretSantaWeb.Endpoint do
     key: "_secret_santa_key",
     signing_salt: "gRM9Q2/V"
 
+  plug CORSPlug
+
   plug SecretSantaWeb.Router
 end

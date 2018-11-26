@@ -44,7 +44,8 @@ defmodule SecretSanta.MixProject do
       {:absinthe_plug, "~> 1.4"},
       {:guardian, "~> 1.0"},
       {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 0.12"}
+      {:bcrypt_elixir, "~> 0.12"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
