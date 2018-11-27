@@ -23,6 +23,12 @@ config :secret_santa, SecretSanta.Accounts.Guardian,
   issuer: "secret_santa",
   secret_key: "1oandh2eNzgkTGE7trKmggaoy7rENfPvvt1y9WBpOUE9RYGBjW2jHvm4lhl3aAaH"
 
+# Configures the CORS plug
+config :cors_plug,
+  origin: ["http://localhost:3000"],
+  max_age: 86400,
+  methods: ["GET", "POST"]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

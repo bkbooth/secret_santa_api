@@ -1,12 +1,14 @@
 defmodule SecretSantaWeb.Router do
   use SecretSantaWeb, :router
 
-  pipeline :api do
+  pipeline :graphql do
+    plug :fetch_cookies
     plug :accepts, ["json"]
+    plug SecretSantaWeb.Context
   end
 
   scope "/api" do
-    pipe_through :api
+    pipe_through :graphql
 
     if Mix.env() == :dev do
       forward "/graphiql", Absinthe.Plug.GraphiQL,
@@ -17,6 +19,7 @@ defmodule SecretSantaWeb.Router do
 
     forward "/", Absinthe.Plug,
       schema: SecretSantaWeb.Schema,
-      json_codec: Phoenix.json_library()
+      json_codec: Phoenix.json_library(),
+      before_send: {SecretSantaWeb.Context, :put_token_before_send}
   end
 end

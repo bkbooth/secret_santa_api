@@ -7,7 +7,7 @@ defmodule SecretSanta.Accounts do
 
   alias Comeonin.Bcrypt
   alias SecretSanta.Repo
-  alias SecretSanta.Accounts.{Guardian, User}
+  alias SecretSanta.Accounts.{User}
 
   @doc """
   Returns the list of users.
@@ -124,7 +124,7 @@ defmodule SecretSanta.Accounts do
   Authenticate a user by email and password.
 
       iex> authenticate_by_email_and_password("user@example.com", "password123")
-      {:ok, token, claims}
+      {:ok, %User{}}
 
       iex> authenticate_by_email_and_password("user@example.com", "invalid123")
       {:error, :unauthorized}
@@ -136,7 +136,7 @@ defmodule SecretSanta.Accounts do
   def authenticate_by_email_and_password(email, password) do
     with %User{} = user <- get_user_by_email(email),
          :ok <- verify_password(password, user.password_hash) do
-      Guardian.encode_and_sign(user)
+      {:ok, user}
     else
       nil ->
         Bcrypt.dummy_checkpw()

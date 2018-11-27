@@ -4,6 +4,7 @@ defmodule SecretSantaWeb.Schema do
   import_types(SecretSantaWeb.Schema.AccountTypes)
   import_types(SecretSantaWeb.Schema.GiftTypes)
 
+  alias SecretSanta.Accounts.User
   alias SecretSantaWeb.Resolvers
 
   query do
@@ -20,6 +21,16 @@ defmodule SecretSantaWeb.Schema do
       arg(:password, non_null(:string))
 
       resolve(&Resolvers.Accounts.login/3)
+
+      middleware(fn resolution, _ ->
+        with %{value: %User{} = user} <- resolution do
+          Map.update!(resolution, :context, fn context ->
+            context
+            |> Map.put(:login, true)
+            |> Map.put(:user, user)
+          end)
+        end
+      end)
     end
   end
 end
