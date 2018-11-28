@@ -32,5 +32,25 @@ defmodule SecretSantaWeb.Schema do
         end
       end)
     end
+
+    @desc "Signup user"
+    field :signup, type: :user do
+      arg(:name, non_null(:string))
+      arg(:email, non_null(:string))
+      arg(:password, non_null(:string))
+      arg(:phone_number, :string)
+
+      resolve(&Resolvers.Accounts.signup/3)
+
+      middleware(fn resolution, _ ->
+        with %{value: %User{} = user} <- resolution do
+          Map.update!(resolution, :context, fn context ->
+            context
+            |> Map.put(:login, true)
+            |> Map.put(:user, user)
+          end)
+        end
+      end)
+    end
   end
 end
