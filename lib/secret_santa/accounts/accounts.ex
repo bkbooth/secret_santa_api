@@ -140,10 +140,21 @@ defmodule SecretSanta.Accounts do
     else
       nil ->
         Bcrypt.dummy_checkpw()
-        {:error, :not_found}
+
+        {:error,
+         %Kronky.ValidationMessage{
+           code: :unknown,
+           field: :email,
+           message: "No user found for #{email}"
+         }}
 
       _ ->
-        {:error, :unauthorized}
+        {:error,
+         %Kronky.ValidationMessage{
+           code: :unknown,
+           field: :password,
+           message: "Invalid password"
+         }}
     end
   end
 

@@ -1,6 +1,9 @@
 defmodule SecretSantaWeb.Schema.GiftTypes do
   use Absinthe.Schema.Notation
 
+  # alias SecretSanta.Gifts.{Gifter, GiftGroup}
+  # alias SecretSantaWeb.Resolvers.Gifts, as: Resolvers
+
   object :gift_group do
     field :id, non_null(:id)
     field :code, non_null(:string)
@@ -20,5 +23,13 @@ defmodule SecretSantaWeb.Schema.GiftTypes do
     field :gift_group, non_null(:gift_group)
     field :giftee, :gifter
     field :user, :user
+  end
+
+  object :gift_queries do
+    # TODO
+  end
+
+  object :gift_mutations do
+    # TODO
   end
 end
